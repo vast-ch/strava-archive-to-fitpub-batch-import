@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Strava to FitPub</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-100 via-white to-indigo-50 py-12 px-4 font-sans">
+
+  <div class="max-w-xl mx-auto space-y-5">
+
+    <!-- Header -->
+    <div class="text-center pb-2">
+      <div class="relative">
+        <img src="logo.svg" alt="FitPub logo" class="mx-auto mb-3 w-16 h-16 object-contain" />
+        <a href="https://github.com/vast-ch/strava-archive-to-fitpub-batch-import" target="_blank" rel="noopener"
+           class="absolute top-0 right-0 text-slate-400 hover:text-slate-600 transition-colors" title="View on GitHub">
+          <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.605-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/>
+          </svg>
+        </a>
+      </div>
+      <h1 class="text-2xl font-bold text-slate-800 tracking-tight"><a href="https://www.strava.com/account" target="_blank" rel="noopener" class="text-orange-500 hover:underline">Strava</a> → <a href="https://fitpub.social/batch-upload" target="_blank" rel="noopener" class="text-indigo-600 hover:underline">FitPub</a></h1>
+      <p class="mt-1 text-sm text-slate-500">Move your activity history from Strava to FitPub. This tool converts your Strava data export into correctly formatted, sized, and counted ZIP batches ready for import.</p>
+    </div>
+
+    <!-- Step 1: File picker -->
+    <div class="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-6">
+      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Step 1 — Select files</p>
+
+      <div id="dropzone"
+        class="border-2 border-dashed border-slate-200 rounded-xl p-8 text-center cursor-pointer transition-all duration-150 hover:border-indigo-400 hover:bg-indigo-50/50 select-none">
+        <svg class="mx-auto mb-3 w-9 h-9 text-slate-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" />
+        </svg>
+        <p class="font-medium text-slate-600 text-sm">Drag &amp; drop activity files here</p>
+        <p class="text-slate-400 text-xs mt-1">or <span class="text-indigo-500 underline underline-offset-2">click to browse</span></p>
+        <p class="text-slate-400 text-xs mt-2.5">.fit &nbsp;·&nbsp; .fit.gz &nbsp;·&nbsp; .gpx &nbsp;— other files are ignored</p>
+        <input id="fileInput" type="file" multiple class="hidden" />
+      </div>
+
+      <div id="fileStats" class="hidden mt-3 flex items-center gap-2 text-sm px-3 py-2.5 rounded-lg bg-indigo-50 text-indigo-700">
+        <svg class="w-4 h-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+        </svg>
+        <span id="fileStatsText"></span>
+      </div>
+
+      <div id="fileError" class="hidden mt-3 flex items-center gap-2 text-sm px-3 py-2.5 rounded-lg bg-red-50 text-red-600">
+        <svg class="w-4 h-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+        </svg>
+        <span id="fileErrorText"></span>
+      </div>
+    </div>
+
+    <!-- Step 2: Batch limits -->
+    <div class="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-6">
+      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-5">Step 2 — Batch limits</p>
+
+      <div class="space-y-6">
+        <div>
+          <div class="flex justify-between items-baseline mb-2">
+            <label class="text-sm font-medium text-slate-700">Max files per ZIP</label>
+            <span id="maxFilesVal" class="text-sm font-bold text-indigo-600 tabular-nums">1000</span>
+          </div>
+          <input id="maxFilesSlider" type="range" min="100" max="1000" step="100" value="1000" class="w-full h-1.5 rounded-full bg-slate-200 appearance-none outline-none" />
+          <div class="flex justify-between text-xs text-slate-400 mt-1.5"><span>100</span><span>1000</span></div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-baseline mb-2">
+            <label class="text-sm font-medium text-slate-700">Max uncompressed size per ZIP</label>
+            <span id="maxSizeVal" class="text-sm font-bold text-indigo-600 tabular-nums">500 MB</span>
+          </div>
+          <input id="maxSizeSlider" type="range" min="50" max="500" step="50" value="500" class="w-full h-1.5 rounded-full bg-slate-200 appearance-none outline-none" />
+          <div class="flex justify-between text-xs text-slate-400 mt-1.5"><span>50 MB</span><span>500 MB</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Process button -->
+    <button id="processBtn" disabled
+      class="w-full py-3 px-6 rounded-xl font-semibold text-sm text-white bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed transition-colors shadow-sm">
+      Create Batches
+    </button>
+
+    <!-- Progress -->
+    <div id="progressSection" class="hidden bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-6">
+      <div class="flex justify-between items-center mb-3">
+        <span class="text-sm font-medium text-slate-700">Processing…</span>
+        <span id="progressPct" class="text-sm font-bold text-indigo-600 tabular-nums">0%</span>
+      </div>
+      <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+        <div id="progressBar" class="bg-indigo-500 h-2 rounded-full transition-all duration-200" style="width:0%"></div>
+      </div>
+      <p id="progressDetail" class="mt-2 text-xs text-slate-400"></p>
+    </div>
+
+    <!-- Results -->
+    <div id="resultsSection" class="hidden bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Results</p>
+        <button id="downloadAllBtn"
+          class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors">
+          Download all
+        </button>
+      </div>
+      <div id="batchList" class="space-y-2"></div>
+      <p class="mt-4 text-xs text-slate-400">Upload each ZIP one at a time via <strong>Upload → Batch Import</strong> on your <a href="https://codeberg.org/fitpub/fitpub" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-slate-600">FitPub</a> instance (such as <a href="https://fitpub.social" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-slate-600">fitpub.social</a>). Wait for each batch to finish before uploading the next.</p>
+    </div>
+
+  </div>
+
+  <footer class="max-w-xl mx-auto mt-10 text-center text-xs text-slate-400">
+    <a href="https://codeberg.org/fitpub/fitpub" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-slate-600">FitPub</a>
+    is a self-hostable fitness tracker built on
+    <a href="https://activitypub.rocks" target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-slate-600">ActivityPub</a>
+    — the open protocol powering the fediverse.
+  </footer>
+
+  <script src="app.js" defer></script>
+
+</body>
+</html>

@@ -15,6 +15,8 @@ Strava exports activities as `.fit.gz`, `.fit`, `.gpx`, and `.tcx`/`.tcx.gz` fil
 
 Runs entirely in the browser — no install, no server. Extract your Strava archive, select the files from the `activities/` folder, configure batch limits via sliders, and download ready-to-upload ZIPs.
 
+Want to try it without a real export? [`examples/sample-activities-export.zip`](examples/sample-activities-export.zip) contains a mock `activities/` folder with one of each supported format (`.fit`, `.fit.gz`, `.gpx`, `.tcx`, `.tcx.gz`) plus a few unsupported files (`.txt`, `.jpg`, `.csv`) to see the unrecognized-file warning in action.
+
 ---
 
 ## Getting your Strava export

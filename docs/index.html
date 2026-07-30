@@ -39,7 +39,7 @@
         </svg>
         <p class="font-medium text-slate-600 text-sm">Drag &amp; drop activity files here</p>
         <p class="text-slate-400 text-xs mt-1">or <span class="text-indigo-500 underline underline-offset-2">click to browse</span></p>
-        <p class="text-slate-400 text-xs mt-2.5">.fit &nbsp;·&nbsp; .fit.gz &nbsp;·&nbsp; .gpx &nbsp;— other files are ignored</p>
+        <p class="text-slate-400 text-xs mt-2.5">.fit &nbsp;·&nbsp; .fit.gz &nbsp;·&nbsp; .gpx &nbsp;·&nbsp; .tcx &nbsp;·&nbsp; .tcx.gz &nbsp;— other files are ignored</p>
         <input id="fileInput" type="file" multiple class="hidden" />
       </div>
 
@@ -55,6 +55,16 @@
           <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
         </svg>
         <span id="fileErrorText"></span>
+      </div>
+
+      <div id="fileWarning" class="hidden mt-3 px-3 py-2.5 rounded-lg bg-amber-50 text-amber-700">
+        <div class="flex items-center gap-2 text-sm">
+          <svg class="w-4 h-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.19-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+          </svg>
+          <span id="fileWarningText"></span>
+        </div>
+        <ul id="fileWarningList" class="mt-1.5 ml-6 max-h-28 overflow-y-auto text-xs font-mono space-y-0.5 list-disc"></ul>
       </div>
     </div>
 
@@ -75,10 +85,10 @@
         <div>
           <div class="flex justify-between items-baseline mb-2">
             <label class="text-sm font-medium text-slate-700">Max uncompressed size per ZIP</label>
-            <span id="maxSizeVal" class="text-sm font-bold text-indigo-600 tabular-nums">500 MB</span>
+            <span id="maxSizeVal" class="text-sm font-bold text-indigo-600 tabular-nums">5.0 GB</span>
           </div>
-          <input id="maxSizeSlider" type="range" min="50" max="500" step="50" value="500" class="w-full h-1.5 rounded-full bg-slate-200 appearance-none outline-none" />
-          <div class="flex justify-between text-xs text-slate-400 mt-1.5"><span>50 MB</span><span>500 MB</span></div>
+          <input id="maxSizeSlider" type="range" min="250" max="5000" step="250" value="5000" class="w-full h-1.5 rounded-full bg-slate-200 appearance-none outline-none" />
+          <div class="flex justify-between text-xs text-slate-400 mt-1.5"><span>250 MB</span><span>5.0 GB</span></div>
         </div>
       </div>
     </div>

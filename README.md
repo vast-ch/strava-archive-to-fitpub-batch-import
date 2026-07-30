@@ -5,7 +5,7 @@
 A tool for moving your activity history from [Strava](https://www.strava.com) to [FitPub](https://codeberg.org/fitpub/fitpub) (such as [fitpub.social](https://fitpub.social)).
 
 
-Strava exports activities as `.fit.gz`, `.fit`, and `.gpx` files. FitPub's batch import accepts `.fit` and `.gpx` only, with a limit of **1,000 files** and **500 MB** per ZIP. This tool decompresses and repackages everything into ready-to-upload batches.
+Strava exports activities as `.fit.gz`, `.fit`, `.gpx`, and `.tcx`/`.tcx.gz` files. FitPub's batch import accepts `.fit`, `.gpx`, and `.tcx`, with a limit of **1,000 files** and **5.0 GB** per ZIP. This tool decompresses and repackages everything into ready-to-upload batches.
 
 ---
 

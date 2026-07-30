@@ -4,26 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Two-artifact project:
+Browser-based tool that decompresses `.fit.gz`/`.tcx.gz` files and repackages Strava activity exports (`.fit`, `.gpx`, `.tcx`, and their gzipped forms) into batched ZIPs for FitPub's batch import. Any file that doesn't match a supported extension is skipped and listed in an on-page warning so the user notices anything unexpected.
 
-- `strava_archive_to_fitpub_batch_import.py` — CLI tool (Python 3.6+, stdlib only) that decompresses `.fit.gz` files and repackages Strava activity exports into batched ZIPs.
-- `index.html` — browser-based version of the same tool. No build step, no server. Uses Tailwind CSS (CDN) and fflate (CDN) for in-browser ZIP creation and gzip decompression.
-
-## Running the CLI
-
-```bash
-python3 strava_archive_to_fitpub_batch_import.py <activities_folder> <output_folder>
-```
+- `docs/index.html`, `docs/app.js`, `docs/style.css` — the app, served via GitHub Pages. No build step, no server. Uses Tailwind CSS (CDN) and fflate (CDN) for in-browser ZIP creation and gzip decompression.
 
 No tests, no build step, no linting configuration.
 
-## index.html
-
-Static single-file page. Open directly in a browser — no server needed. Dependencies loaded from CDN:
+Dependencies loaded from CDN:
 - Tailwind CSS (`cdn.tailwindcss.com`)
 - fflate `0.8.2` (`cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js`) — exposes `fflate` as a global
 
 Batch limits (max files per ZIP, max uncompressed size per ZIP) are configurable via sliders. Output ZIPs are downloaded client-side via `URL.createObjectURL`.
+
+There used to be an equivalent Python CLI script (`strava_archive_to_fitpub_batch_import.py`); it was removed to keep only the web app.
 
 ## Branding & copy conventions
 

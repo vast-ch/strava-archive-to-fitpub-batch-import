@@ -7,6 +7,9 @@ const fileStats = document.getElementById('fileStats');
 const fileStatsText = document.getElementById('fileStatsText');
 const fileError = document.getElementById('fileError');
 const fileErrorText = document.getElementById('fileErrorText');
+const fileWarning = document.getElementById('fileWarning');
+const fileWarningText = document.getElementById('fileWarningText');
+const fileWarningList = document.getElementById('fileWarningList');
 const maxFilesSlider = document.getElementById('maxFilesSlider');
 const maxSizeSlider = document.getElementById('maxSizeSlider');
 const maxFilesVal = document.getElementById('maxFilesVal');
@@ -50,24 +53,35 @@ maxFilesSlider.addEventListener('input', () => {
   maxFilesVal.textContent = maxFilesSlider.value;
 });
 maxSizeSlider.addEventListener('input', () => {
-  maxSizeVal.textContent = maxSizeSlider.value + ' MB';
+  maxSizeVal.textContent = formatSizeMB(parseInt(maxSizeSlider.value));
 });
 
+const SUPPORTED_EXTENSIONS = ['.fit.gz', '.fit', '.gpx', '.tcx.gz', '.tcx'];
+
+function isSupported(filename) {
+  const n = filename.toLowerCase();
+  return SUPPORTED_EXTENSIONS.some(ext => n.endsWith(ext));
+}
+
+function formatSizeMB(mb) {
+  return mb >= 1000 ? (mb / 1000).toFixed(1) + ' GB' : mb + ' MB';
+}
+
 function handleFiles(files) {
-  const supported = files.filter(f => {
-    const n = f.name.toLowerCase();
-    return n.endsWith('.fit.gz') || n.endsWith('.fit') || n.endsWith('.gpx');
-  });
-  const skipped = files.length - supported.length;
+  const supported = files.filter(f => isSupported(f.name));
+  const skipped = files.filter(f => !isSupported(f.name));
 
   fileStats.classList.add('hidden');
   fileError.classList.add('hidden');
+  fileWarning.classList.add('hidden');
   resultsSection.classList.add('hidden');
   progressSection.classList.add('hidden');
   batches = [];
 
+  renderWarnings(skipped);
+
   if (supported.length === 0) {
-    fileErrorText.textContent = 'No supported files found. Select .fit, .fit.gz, or .gpx files.';
+    fileErrorText.textContent = 'No supported files found. Select .fit, .fit.gz, .gpx, .tcx, or .tcx.gz files.';
     fileError.classList.remove('hidden');
     processBtn.disabled = true;
     selectedFiles = [];
@@ -76,10 +90,28 @@ function handleFiles(files) {
 
   selectedFiles = supported;
   let msg = `${supported.length} file${supported.length !== 1 ? 's' : ''} ready`;
-  if (skipped > 0) msg += ` · ${skipped} ignored`;
+  if (skipped.length > 0) msg += ` · ${skipped.length} ignored`;
   fileStatsText.textContent = msg;
   fileStats.classList.remove('hidden');
   processBtn.disabled = false;
+}
+
+function renderWarnings(skipped) {
+  fileWarningList.innerHTML = '';
+
+  if (skipped.length === 0) {
+    fileWarning.classList.add('hidden');
+    return;
+  }
+
+  fileWarningText.textContent = `${skipped.length} unrecognized file${skipped.length !== 1 ? 's' : ''} ignored — not one of .fit, .fit.gz, .gpx, .tcx, .tcx.gz:`;
+  skipped.forEach(f => {
+    const li = document.createElement('li');
+    li.className = 'truncate';
+    li.textContent = f.name;
+    fileWarningList.appendChild(li);
+  });
+  fileWarning.classList.remove('hidden');
 }
 
 // Main processing
@@ -107,11 +139,13 @@ processBtn.addEventListener('click', async () => {
     const file = files[i];
     const lower = file.name.toLowerCase();
 
+    const isGz = lower.endsWith('.gz');
+
     let data;
     try {
       const buf = await file.arrayBuffer();
       data = new Uint8Array(buf);
-      if (lower.endsWith('.fit.gz')) {
+      if (isGz) {
         data = fflate.gunzipSync(data);
       }
     } catch (e) {
@@ -119,7 +153,7 @@ processBtn.addEventListener('click', async () => {
       continue;
     }
 
-    const arcName = lower.endsWith('.fit.gz') ? file.name.slice(0, -3) : file.name;
+    const arcName = isGz ? file.name.slice(0, -3) : file.name;
     const fileSize = data.length;
 
     const last = entries.length - 1;

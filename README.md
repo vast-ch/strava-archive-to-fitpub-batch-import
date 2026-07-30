@@ -2,10 +2,10 @@
 
 <img src="docs/logo.svg" alt="Strava to FitPub logo" width="120" />
 
-Tools for moving your activity history from [Strava](https://www.strava.com) to [FitPub](https://codeberg.org/fitpub/fitpub) (such as [fitpub.social](https://fitpub.social)).
+A tool for moving your activity history from [Strava](https://www.strava.com) to [FitPub](https://codeberg.org/fitpub/fitpub) (such as [fitpub.social](https://fitpub.social)).
 
 
-Strava exports activities as `.fit.gz`, `.fit`, and `.gpx` files. FitPub's batch import accepts `.fit` and `.gpx` only, with a limit of **1,000 files** and **500 MB** per ZIP. These tools decompress and repackage everything into ready-to-upload batches.
+Strava exports activities as `.fit.gz`, `.fit`, and `.gpx` files. FitPub's batch import accepts `.fit` and `.gpx` only, with a limit of **1,000 files** and **500 MB** per ZIP. This tool decompresses and repackages everything into ready-to-upload batches.
 
 ---
 
@@ -14,29 +14,6 @@ Strava exports activities as `.fit.gz`, `.fit`, and `.gpx` files. FitPub's batch
 **[https://vast-ch.github.io/strava-archive-to-fitpub-batch-import/](https://vast-ch.github.io/strava-archive-to-fitpub-batch-import/)**
 
 Runs entirely in the browser — no install, no server. Extract your Strava archive, select the files from the `activities/` folder, configure batch limits via sliders, and download ready-to-upload ZIPs.
-
----
-
-## Python script
-
-Requires Python 3.6+, no third-party dependencies.
-
-```bash
-python3 strava_archive_to_fitpub_batch_import.py <activities_folder> <output_folder>
-```
-
-| Argument | Description |
-|---|---|
-| `activities_folder` | Path to the `activities/` folder from your Strava export |
-| `output_folder` | Path where the output ZIPs will be written (created if it doesn't exist) |
-
-### Example
-
-```bash
-python3 strava_archive_to_fitpub_batch_import.py \
-  ~/Downloads/export_14041018/activities \
-  ~/Desktop/strava-fitpub-upload
-```
 
 ---
 
